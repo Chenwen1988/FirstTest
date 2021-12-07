@@ -4,7 +4,7 @@
 
 
 
-## 正常使用git的一般流程
+## 同步本地文件到github的一般流程
 
 1. 本地安装任意版本的[git](https://git-scm.com/)
 
@@ -110,6 +110,8 @@ If the reviewers ask for changes, repeat steps 5 and 6 to add more commits to yo
 
 切换分支 `git checkout branch-name`  创建并切换 `git checkout -b branch-name`
 
+查看当前状态 `git status`
+
 
 
 ## 使用过程中的一些问题
@@ -148,3 +150,35 @@ If the reviewers ask for changes, repeat steps 5 and 6 to add more commits to yo
    [详见](https://stackoverflow.com/questions/348170/how-do-i-undo-git-add-before-commit)
 
 4. 合并分支失败
+
+   但远程仓库和本地历史不同步时，尤其是分别在远程仓库和本地创建文件后，执行上传操作，会遇到各种commit和push失败的问题，尤其在初次提交阶段。
+
+   同步本地文件到github，推荐先在github创建文件夹，通过`git clone`到本地的形式初始化本地文件夹，然后将需要上传的文件复制到本地文件夹在执行上传操作。
+
+   当遇到该问题时，有以下方案可供选择：
+
+   1. 使用强制push的方法
+
+      ```git
+      git push -u origin master -f
+      ```
+
+      这样会使远程修改丢失，一般是不可取的，尤其是多人协作开发的时候。
+
+   2. push前先将远程repository修改pull下来
+
+      ```git
+      git pull origin master --allow-unrelated-histories
+      git push -u origin master
+      ```
+
+      不一定能解决
+
+   3. 若不想merge远程和本地修改，可以先创建新的分支**[推荐]**
+
+      ```git
+      $ git branch [name]
+      $ git push -u origin [name]
+      ```
+
+      亲测可用
