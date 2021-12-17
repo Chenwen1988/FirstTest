@@ -110,7 +110,13 @@ If the reviewers ask for changes, repeat steps 5 and 6 to add more commits to yo
 
 切换分支 `git checkout branch-name`  创建并切换 `git checkout -b branch-name`
 
-查看当前状态 `git status`
+查看当前暂存区状态 `git status`
+
+查看远程连接状态 `git remote -v`
+
+常看commit记录 `git log`
+
+设置默认编辑器 ` git config --global core.editor vim `
 
 
 
@@ -182,3 +188,22 @@ If the reviewers ask for changes, repeat steps 5 and 6 to add more commits to yo
       ```
 
       亲测可用
+
+5. commit成功，push失败的问题
+
+   这个问题出现在但上传文件中有大文件（超过100M），网上给出的建议方案：
+
+   **If the large file was added in the most recent commit**, you can just run:
+
+   1. `git rm --cached ` to remove the large file, then
+   2. `git commit --amend -C HEAD` to edit the commit
+
+   **If the large file was added in an earlier commit,** I recommend running an interactive rebase. That means you need to:
+
+   1. Run `git log` to find the commit hash of the last commit *before* you added the large file
+   2. Then run `git rebase -i `. This will open up an editor where you want to replace `pick` with `edit` on the commit where the large file was added.
+   3. Once you save and close the editor, you’ll be in essentially the same position as if you had added the file in the most recent commit—all you need to do is `git rm --cached ` and `git commit --amend -C HEAD` (same as the “most recent commit” steps)
+   4. Then to finish up, run `git rebase --continue`
+
+   
+    
