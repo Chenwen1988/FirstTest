@@ -4,7 +4,7 @@
 
 
 
-## 正常使用git的一般流程
+## 同步本地文件到github的一般流程
 
 1. 本地安装任意版本的[git](https://git-scm.com/)
 
@@ -110,6 +110,14 @@ If the reviewers ask for changes, repeat steps 5 and 6 to add more commits to yo
 
 切换分支 `git checkout branch-name`  创建并切换 `git checkout -b branch-name`
 
+查看当前暂存区状态 `git status`
+
+查看远程连接状态 `git remote -v`
+
+常看commit记录 `git log`
+
+设置默认编辑器 ` git config --global core.editor vim `
+
 
 
 ## 使用过程中的一些问题
@@ -148,3 +156,54 @@ If the reviewers ask for changes, repeat steps 5 and 6 to add more commits to yo
    [详见](https://stackoverflow.com/questions/348170/how-do-i-undo-git-add-before-commit)
 
 4. 合并分支失败
+
+   但远程仓库和本地历史不同步时，尤其是分别在远程仓库和本地创建文件后，执行上传操作，会遇到各种commit和push失败的问题，尤其在初次提交阶段。
+
+   同步本地文件到github，推荐先在github创建文件夹，通过`git clone`到本地的形式初始化本地文件夹，然后将需要上传的文件复制到本地文件夹在执行上传操作。
+
+   当遇到该问题时，有以下方案可供选择：
+
+   1. 使用强制push的方法
+
+      ```git
+      git push -u origin master -f
+      ```
+
+      这样会使远程修改丢失，一般是不可取的，尤其是多人协作开发的时候。
+
+   2. push前先将远程repository修改pull下来
+
+      ```git
+      git pull origin master --allow-unrelated-histories
+      git push -u origin master
+      ```
+
+      不一定能解决
+
+   3. 若不想merge远程和本地修改，可以先创建新的分支**[推荐]**
+
+      ```git
+      $ git branch [name]
+      $ git push -u origin [name]
+      ```
+
+      亲测可用
+
+5. commit成功，push失败的问题
+
+   这个问题出现在但上传文件中有大文件（超过100M），网上给出的建议方案：
+
+   **If the large file was added in the most recent commit**, you can just run:
+
+   1. `git rm --cached ` to remove the large file, then
+   2. `git commit --amend -C HEAD` to edit the commit
+
+   **If the large file was added in an earlier commit,** I recommend running an interactive rebase. That means you need to:
+
+   1. Run `git log` to find the commit hash of the last commit *before* you added the large file
+   2. Then run `git rebase -i `. This will open up an editor where you want to replace `pick` with `edit` on the commit where the large file was added.
+   3. Once you save and close the editor, you’ll be in essentially the same position as if you had added the file in the most recent commit—all you need to do is `git rm --cached ` and `git commit --amend -C HEAD` (same as the “most recent commit” steps)
+   4. Then to finish up, run `git rebase --continue`
+
+   
+    
